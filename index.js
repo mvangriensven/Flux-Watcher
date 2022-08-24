@@ -8,10 +8,15 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS]})
 client.commands = new Collection();
 
 // Importing cron jobs
-const checkNodes = require('./modules/checkNodes.js');
+const moduleFiles = fs.readdirSync('./modules').filter(file => file.endsWith('.js'));
+for (const file of moduleFiles) {
+    const module = require(`./modules/${file}`);
+    module.initiateModule();
+    console.log(`${file} module has started`);
+}
 
+// Import commands
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.data.name, command);
