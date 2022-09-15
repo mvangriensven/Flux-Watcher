@@ -8,15 +8,10 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS]})
 client.commands = new Collection();
 
 // Importing cron jobs
-const moduleFiles = fs.readdirSync('./modules').filter(file => file.endsWith('.js'));
-for (const file of moduleFiles) {
-    const module = require(`./modules/${file}`);
-    module.initiateModule();
-    console.log(`${file} module has started`);
-}
+const checkNodes = require('./modules/checkNodes.js');
 
-// Import commands
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.data.name, command);
@@ -25,9 +20,9 @@ for (const file of commandFiles) {
 client.once('ready', () => {
 
     if (!fs.existsSync(`./nodes.json`)) {
-        fs.writeFile('./nodes.json', '[]', function (err) {
+        fs.writeFile('./nodes.json', '{}', function (err) {
             if (err) throw err;
-            console.log('nodes.json file has been created.');
+            console.log('nodes.js file has been created.');
         });
     } else {
         console.log('nodes.js file found.');
@@ -55,6 +50,7 @@ client.on('interactionCreate', async interaction => {
 module.exports.postToChannel = function (channelId, msg) {
 
     try {
+
         const channel = client.channels.cache.find(channel => channel.id === channelId)
         channel.send(msg);
 
@@ -91,5 +87,7 @@ async function getFluxPrice() {
         return currentPrice;
     }
 }
+
+getFluxPrice();
 
 client.login(token);
